@@ -130,13 +130,7 @@ echo '
             <a class="nav-link active" href="../index.html">Home</a>
           </li>
           <li class="nav-item">
-                
-            <script>
-                let notif = sessionStorage.getItem("notif") - sessionStorage.getItem("notifcheck") ;
-                if(notif >= 1){
-                    document.write(`<span id="badge" class="badge badge-pill badge-primary" style="background:red;float:right;margin-bottom:-11px;">1</span>`)
-                }
-            </script>
+            <span id="badge" class="badge badge-pill badge-primary" style="background:red;float:right;margin-bottom:-11px;"></span>
             <a class="nav-link" href="../CheckSheet/index.php">Check Sheet</a>
             </li>
         </ul>
@@ -212,23 +206,10 @@ echo '
 ksort($unique_die_totals); // Sort by Unique Die (UDN1, UDN2, etc.)
 foreach ($unique_die_totals as $unique_die => $total_shot) {
     if ($total_shot > 0) { // Check if total shot is greater than 0
-        if($total_shot % 5000 == 0){
-            $notif += 1 ;
-        }
-        $bg = '' ;
-        if($total_shot == 5000){
-            $bg = 'style="background-color:#fbff0d;" onClick="notifcheck()"' ;
-        }elseif($total_shot == 10000){
-            $bg = 'style="background-color:#87CEFA;" onClick="notifcheck()"' ;
-        }elseif($total_shot == 20000){
-            $bg = 'style="background-color:#FFC0CB;" onClick="notifcheck()"' ;
-        }elseif($total_shot == 40000){
-            $bg = 'style="background-color:#90EE90;" onClick="notifcheck()"' ;
-        }
         echo '
         <tr>
             <td>Total Shot ' . $unique_die . '</td>
-            <td '.$bg.' >' . $total_shot . '</td>
+            <td id="totalshot'.$unique_die.$total_shot.'" >' . $total_shot . '</td>
         </tr>';
     }
 }
@@ -245,33 +226,66 @@ $conn->close();
 ?>
 
 <script>
-    async function notifcheck(){
-        notif = sessionStorage.getItem("notifcheck");
-        sessionStorage.setItem("notifcheck",parseInt(notif)+1);
+    // sessionStorage.clear(); 
+    async function notifcheck(p,t){
+        let notifcheck = sessionStorage.getItem("notifcheck");
+        if (notifcheck != null) {
+            notifcheck = [notifcheck] ;
+        }else{
+            notifcheck = [] ;
+
+        }
+        notifcheck.push(p) ;
+        
+        sessionStorage.setItem("notifcheck",notifcheck+t);
         window.location.reload();
     }
 
     async function notifikasi() {
+        
         try {
-            const response = await fetch('../notif.php');
-            const data = await response.json();
-            notif = 0 ;
+            
+            var notifcheck  = sessionStorage.getItem("notifcheck");
+            const response  = await fetch('../notif.php');
+            const data      = await response.json();
+            notif           = [] ;
             for(x in data){
-                let hasilbagi = data[x]['total_shot'] % 5000 ;
-                if(data[x]['total_shot'] > 0 && hasilbagi == 0){
-                    notif +=1 ;
+                const uniquedie = data[x]['unique_die'];
+                var tdshot      = document.getElementById('totalshot'+uniquedie+data[x]['total_shot']);
+                if(notifcheck == null){
+                    notifcheck = 'null';
                 }
-            }
-            sessionStorage.setItem("notif",notif);
-            if(sessionStorage.getItem("notif") == 0){
-                sessionStorage.setItem("notifcheck",0);
+                if(data[x]['total_shot'] == 5000){ //5000
+                    notif.push(uniquedie) ;
+                    if(notifcheck.search(uniquedie+'5000') <= 0 ){
+                        tdshot.setAttribute("style",`background-color:#fbff0d;`);
+                        tdshot.setAttribute("onClick",`notifcheck('`+uniquedie+`',5000)`);
+                    }
+                }else if(data[x]['total_shot'] == 10000){ //10000
+                    notif.push(uniquedie) ;
+
+                    if(notifcheck.search(uniquedie+'10000') <= 0){
+                        tdshot.setAttribute("style",`background-color:#87CEFA;`);
+                        tdshot.setAttribute("onClick",`notifcheck('`+uniquedie+`',10000)`);
+                    }
+                }else if(data[x]['total_shot'] == 20000){ //20000
+                    notif.push(uniquedie) ;
+                    if(notifcheck.search(uniquedie+'20000') <= 0){
+                        tdshot.setAttribute("style",`background-color:#FFC0CB;`);
+                        tdshot.setAttribute("onClick",`notifcheck('`+uniquedie+`',20000)`);
+                    }
+                }else if(data[x]['total_shot'] == 40000){ //40000
+                    notif.push(uniquedie) ;
+                    if(notifcheck.search(uniquedie+'40000') <= 0){
+                        tdshot.setAttribute("style",`background-color:#90EE90;`);
+                        tdshot.setAttribute("onClick",`notifcheck('`+uniquedie+`',40000)`);
+                    }
+                }
+
+                sessionStorage.setItem("notif",notif);
+
             }
         } catch (error) {
-            // Swal.fire({
-            //   icon: 'error',
-            //   title: 'Gagal mengambil data',
-            //   text: 'Terjadi kesalahan saat mengambil data dari server.',
-            // });
         }
     }
 
@@ -281,4 +295,14 @@ $conn->close();
         window.location.reload();
     },20000);
     notifikasi()
+    
+    let totalnotif       = sessionStorage.getItem("notif") ? sessionStorage.getItem("notif").split(",") : []  ;
+    let totalnotifcheck  = sessionStorage.getItem("notifcheck") ? sessionStorage.getItem("notifcheck").split(",") : [] ;
+    let totalnotifall    = totalnotif.length - totalnotifcheck.length 
+    // console.log(totalnotifcheck);
+    if(totalnotifall >= 1){
+        let badge = document.getElementById('badge');
+        badge.textContent  = totalnotifall;
+    }
+
 </script>

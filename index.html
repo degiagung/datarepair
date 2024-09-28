@@ -108,12 +108,7 @@
               <a class="nav-link active" aria-current="page" href="#">Home</a>
             </li>
             <li class="nav-item">
-              <script>
-                let notif = sessionStorage.getItem("notif") - sessionStorage.getItem("notifcheck");
-                if (notif >= 1) {
-                  document.write(`<span id="badge" class="badge badge-pill badge-primary" style="background:red;float:right;margin-bottom:-15px;">1</span>`)
-                }
-              </script>
+              <span id="badge" class="badge badge-pill badge-primary" style="background:red;float:right;margin-bottom:-15px;"></span>
               <a class="nav-link" href="CheckSheet/index.php">Check Sheet</a>
             </li>
             <!-- <li class="nav-item dropdown">
@@ -214,30 +209,63 @@
 <script>
 
   async function notifikasi() {
-    try {
-      const response = await fetch('notif.php');
-      const data = await response.json();
-      notif = 0;
-      for (x in data) {
-        let hasilbagi = data[x]['total_shot'] % 5000;
-        if (data[x]['total_shot'] > 0 && hasilbagi == 0) {
-          notif += 1;
-        }
-      }
-      sessionStorage.setItem("notif", notif);
-    } catch (error) {
-      // Swal.fire({
-      //   icon: 'error',
-      //   title: 'Gagal mengambil data',
-      //   text: 'Terjadi kesalahan saat mengambil data dari server.',
-      // });
-    }
-  }
 
-  //menjalankan notifikasi setiap 2 menit sekali
-  window.setInterval(function () {
-    notifikasi();
-    window.location.reload();
-  }, 20000);
-  notifikasi()
+      try {
+
+        var tdshot = document.getElementById('totalshot');
+        const response = await fetch('../notif.php');
+        const data = await response.json();
+        notif = [];
+        for (x in data) {
+          let hasilbagi = data[x]['total_shot'] % 5000;
+          let uniquedie = data[x]['unique_die'];
+          if (data[x]['total_shot'] > 0 && hasilbagi == 0) {
+            notif.push(uniquedie);
+          }
+
+          if (data[x]['total_shot'] == 5000) {
+            tdshot.setAttribute("style", `background-color:#fbff0d;`);
+            tdshot.setAttribute("onClick", `notifcheck('` + uniquedie + `',5000)`);
+          } else if (data[x]['total_shot'] == 10000) {
+            tdshot.setAttribute("style", `background-color:#87CEFA;`);
+            tdshot.setAttribute("onClick", `notifcheck('` + uniquedie + `',10000)`);
+
+          } else if (data[x]['total_shot'] == 20000) {
+            tdshot.setAttribute("style", `background-color:#FFC0CB;`);
+            tdshot.setAttribute("onClick", `notifcheck('` + uniquedie + `',20000)`);
+
+          } else if (data[x]['total_shot'] == 40000) {
+            tdshot.setAttribute("style", `background-color:#90EE90;`);
+            tdshot.setAttribute("onClick", `notifcheck('` + uniquedie + `',40000)`);
+
+          }
+        }
+        sessionStorage.setItem("notif", notif);
+
+        array = sessionStorage.getItem("notif").split(",");
+      } catch (error) {
+        // Swal.fire({
+        //   icon: 'error',
+        //   title: 'Gagal mengambil data',
+        //   text: 'Terjadi kesalahan saat mengambil data dari server.',
+        // });
+      }
+    }
+
+    setTimeout(() => {
+      //menjalankan notifikasi setiap 2 menit sekali
+      window.setInterval(function () {
+        notifikasi();
+        window.location.reload();
+      }, 20000);
+      notifikasi()
+    }, 2000);
+
+    let totalnotif = sessionStorage.getItem("notif") ? sessionStorage.getItem("notif").split(",") : [];
+    let totalnotifcheck = sessionStorage.getItem("notifcheck") ? sessionStorage.getItem("notifcheck").split(",") : [];
+    let totalnotifall = totalnotif.length - totalnotifcheck.length
+    if (totalnotifall >= 1) {
+      let badge = document.getElementById('badge');
+      badge.textContent = totalnotifall;
+    }
 </script>

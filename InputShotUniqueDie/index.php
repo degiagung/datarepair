@@ -108,19 +108,19 @@
         <div class="mb-3">
           <label for="unique_die" class="form-label">Unique Die N:</label>
           <select id="unique_die" name="unique_die" class="form-select">
-            <option value="UDN1">Unique Die N1</option>
-            <option value="UDN2">Unique Die N2</option>
-            <option value="UDN3">Unique Die N3</option>
-            <option value="UDN4">Unique Die N4</option>
-            <option value="UDN5">Unique Die N5</option>
-            <option value="UDN6">Unique Die N6</option>
-            <option value="UDN7">Unique Die N7</option>
-            <option value="UDN8">Unique Die N8</option>
-            <option value="UDN9">Unique Die N9</option>
-            <option value="UDN10">Unique Die N10</option>
-            <option value="UDNH1">Unique Die NH1</option>
-            <option value="UDNH2">Unique Die NH2</option>
-            <option value="UDNH3">Unique Die NH3</option>
+            <option value="1">Unique Die N1</option>
+            <option value="2">Unique Die N2</option>
+            <option value="3">Unique Die N3</option>
+            <option value="4">Unique Die N4</option>
+            <option value="5">Unique Die N5</option>
+            <option value="6">Unique Die N6</option>
+            <option value="7">Unique Die N7</option>
+            <option value="8">Unique Die N8</option>
+            <option value="9">Unique Die N9</option>
+            <option value="10">Unique Die N10</option>
+            <option value="H1">Unique Die NH1</option>
+            <option value="H2">Unique Die NH2</option>
+            <option value="H3">Unique Die NH3</option>
           </select>
         </div>
 

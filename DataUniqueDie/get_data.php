@@ -21,14 +21,14 @@ try {
   $pdo = new PDO($dsn, $user, $pass, $options);
 
   // Prepare and execute the SQL query
-  $stmt = $pdo->query('
+  $stmt = $pdo->query("
     SELECT 
-      unique_die, value_die, sum(total_shot) as total_shot 
+      unique_die, value_die,concat(value_die,replace(unique_die,'UDN','')) value_die_new, sum(total_shot) as total_shot
     FROM 
       unique_die_shots
     GROUP BY
       unique_die,value_die
-    ');
+    ");
 
   // Fetch all the data as an associative array
   $data = $stmt->fetchAll();

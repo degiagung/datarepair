@@ -93,8 +93,6 @@
 
         const response = await fetch('get_data.php');
         const data = await response.json();
-        const responsemon = await fetch('get_data_monitor.php');
-        const datamon = await responsemon.json();
         const tablesContainer = document.getElementById('tablesContainer');
         tablesContainer.innerHTML = ''; // Kosongkan container sebelum menambah tabel
 
@@ -104,14 +102,11 @@
           if (!acc[curr.unique_die]) {
             acc[curr.unique_die] = [];
           }
-          
-          let find      = datamon.find(obj => obj.value_die === curr.unique_die);
-          curr['monitor'] = find;
-          
+                                      
           acc[curr.unique_die].push(curr);
           return acc;
         }, {});
-        
+
         const sortedUniqueDies = Object.keys(groupedData).sort((a, b) => {
           const numA = parseInt(a.replace('UDN', ''));
           const numB = parseInt(b.replace('UDN', ''));
@@ -126,23 +121,22 @@
 
           // Check if there is any non-zero total_shot
           group.forEach(item => {
-            if (item.total_shot > 0) {
+            if (item.total_shot >= 0) {
               hasNonZero = true;
             }
           });
           
           // Sort the data within the group by the key names
           group.sort((a, b) => {
+            
             const order = ['A1N', 'B1N', 'C1N', 'C2N', 'C3N', 'C4N'];
             return order.indexOf(a.value_die) - order.indexOf(b.value_die);
           }).forEach(item => {
-            if (item.total_shot > 0 || !hasNonZero) { // Tambahkan pengecekan di sini
-              let vd    = item.value_die ;
-              let param = JSON.stringify(item.monitor[vd])
+            if (item.total_shot >= 0 || !hasNonZero) { // Tambahkan pengecekan di sini
 
               tableRows += `
                 <tr>
-                  <td><input type="text" class="form-control table-input" value="${item.value_die}${param}" readonly></td>
+                  <td><input type="text" class="form-control table-input" value="${item.value_die_new}" readonly></td>
                   <td><input type="number" class="form-control table-input" value="${item.total_shot}" readonly></td>
                 </tr>
               `;
